@@ -1,4 +1,4 @@
-package pl.fox.arcnotes;
+package pl.fox.arcnotes.repository;
 
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
