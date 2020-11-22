@@ -36,6 +36,14 @@
             <version>6.11.0</version>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/com.google.cloud/google-cloud-vision -->
+        <dependency>
+            <groupId>com.google.cloud</groupId>
+            <artifactId>google-cloud-vision</artifactId>
+            <version>1.100.7</version>
+        </dependency>
+
+
     </dependencies>
 
     <build>
