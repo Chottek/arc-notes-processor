@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 
-
 @RestController
 @RequestMapping("/api/notes/")
 public class NoteController {
@@ -25,7 +24,7 @@ public class NoteController {
     private static final Logger LOG = LoggerFactory.getLogger(NoteController.class);
 
     @PostMapping("/upload")
-    public BodyBuilder uplaodImage(@RequestParam("image") MultipartFile file) throws IOException {
+    public BodyBuilder uploadImage(@RequestParam("image") MultipartFile file) throws IOException {
         LOG.info("IMAGE BYTESIZE: {}", file.getBytes().length);
 
         return ResponseEntity.status(HttpStatus.OK);
