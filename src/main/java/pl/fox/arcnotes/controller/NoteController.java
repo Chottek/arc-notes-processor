@@ -3,31 +3,66 @@ package pl.fox.arcnotes.controller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.ResponseEntity.BodyBuilder;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.bind.annotation.*;
+import pl.fox.arcnotes.model.ImageArray;
+import pl.fox.arcnotes.service.NoteService;
+
+import javax.annotation.PostConstruct;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferByte;
+import java.awt.image.WritableRaster;
+import java.io.File;
 import java.io.IOException;
+import java.sql.Date;
+import java.util.concurrent.ExecutionException;
 
 @RestController
 @RequestMapping("/api/notes/")
 public class NoteController {
 
     private static final Logger LOG = LoggerFactory.getLogger(NoteController.class);
+    private final NoteService service;
+
+    @Autowired
+    public NoteController(NoteService service){
+        this.service = service;
+    }
 
     @PostMapping("/upload")
-    public BodyBuilder uploadImage(@RequestParam("image") MultipartFile file) throws IOException {
-        LOG.info("IMAGE BYTESIZE: {}", file.getBytes().length);
+    public ResponseEntity<String> uploadImage(@RequestBody ImageArray ia) throws ExecutionException, InterruptedException {
+        LOG.info("IMAGE BYTESIZE: {}", ia.getImage().length);
+        return ResponseEntity.ok(service.saveImage(ia));
+    }
 
-        return ResponseEntity.status(HttpStatus.OK);
+    @GetMapping("/get")
+    public ImageArray getImage(@RequestParam String name) throws InterruptedException, ExecutionException{
+        return service.getByName(name);
+    }
+
+    @PostConstruct
+    public String save() throws IOException, ExecutionException, InterruptedException {
+        var imageArr = new ImageArray();
+        var date = new Date(1607104675770L);
+
+        imageArr.setName("TEST");
+        imageArr.setDate(date);
+        imageArr.setImage(extractBytes("maxresdefault.jpg"));
+        return service.saveImage(imageArr);
+    }
+
+    //TEMPORARY / JUST FOR TESTING PURPOSES
+    public byte[] extractBytes (String ImageName) throws IOException {
+        // open image
+        File imgPath = new File(ImageName);
+        BufferedImage bufferedImage = ImageIO.read(imgPath);
+
+        // get DataBufferBytes from Raster
+        WritableRaster raster = bufferedImage .getRaster();
+        DataBufferByte data   = (DataBufferByte) raster.getDataBuffer();
+
+        return data.getData();
     }
 
 }

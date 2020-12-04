@@ -113,6 +113,7 @@
     <orderEntry type="library" name="Maven: io.netty:netty-handler:4.1.54.Final" level="project" />
     <orderEntry type="library" name="Maven: io.netty:netty-resolver:4.1.54.Final" level="project" />
     <orderEntry type="library" name="Maven: io.netty:netty-transport:4.1.54.Final" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: com.google.gms:google-services:3.1.1" level="project" />
     <orderEntry type="library" name="Maven: com.google.cloud:google-cloud-vision:1.100.7" level="project" />
     <orderEntry type="library" name="Maven: io.grpc:grpc-api:1.33.1" level="project" />
     <orderEntry type="library" name="Maven: io.grpc:grpc-context:1.33.1" level="project" />
