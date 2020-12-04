@@ -9,15 +9,17 @@ import org.springframework.web.bind.annotation.*;
 import pl.fox.arcnotes.model.ImageArray;
 import pl.fox.arcnotes.service.NoteService;
 
-import javax.annotation.PostConstruct;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.awt.image.WritableRaster;
-import java.io.File;
 import java.io.IOException;
 import java.sql.Date;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
+
 
 @RestController
 @RequestMapping("/api/notes/")
@@ -33,7 +35,7 @@ public class NoteController {
 
     @PostMapping("/upload")
     public ResponseEntity<String> uploadImage(@RequestBody ImageArray ia) throws ExecutionException, InterruptedException {
-        LOG.info("IMAGE BYTESIZE: {}", ia.getImage().length);
+        LOG.info("IMAGE BYTESIZE: {}", ia.getImage().size());
         return ResponseEntity.ok(service.saveImage(ia));
     }
 
@@ -42,26 +44,37 @@ public class NoteController {
         return service.getByName(name);
     }
 
-    @PostConstruct
+
+    //@TODO: Learn how to store images instead of byte array, getting "UNAVAILABLE: 413:Request Entity Too Large"
+
+    //TEMPORARY / JUST FOR TESTING PURPOSES
+    @GetMapping("/testIt")
     public String save() throws IOException, ExecutionException, InterruptedException {
         var imageArr = new ImageArray();
         var date = new Date(1607104675770L);
 
         imageArr.setName("TEST");
         imageArr.setDate(date);
-        imageArr.setImage(extractBytes("maxresdefault.jpg"));
-        return service.saveImage(imageArr);
+        List<Integer> s = new ArrayList<>();
+
+        for(byte b : extractBytes("maxresdefault.jpg")){
+            s.add(Byte.toUnsignedInt(b));
+        }
+
+        LOG.info("{}", s.size());
+
+        imageArr.setImage(s);
+
+        service.saveImage(imageArr);
+        return "HENLO";
     }
 
-    //TEMPORARY / JUST FOR TESTING PURPOSES
     public byte[] extractBytes (String imageName) throws IOException {
         BufferedImage bufferedImage = ImageIO.read(new ClassPathResource(imageName).getFile());
 
-        // get DataBufferBytes from Raster
-        WritableRaster raster = bufferedImage .getRaster();
-        DataBufferByte data   = (DataBufferByte) raster.getDataBuffer();
+        WritableRaster raster = bufferedImage.getRaster();
+        DataBufferByte data = (DataBufferByte) raster.getDataBuffer();
 
         return data.getData();
     }
-
 }

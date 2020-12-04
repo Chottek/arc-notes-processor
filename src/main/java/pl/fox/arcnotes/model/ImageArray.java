@@ -1,15 +1,20 @@
 package pl.fox.arcnotes.model;
 
+import com.google.cloud.firestore.annotation.IgnoreExtraProperties;
+
 import java.sql.Date;
-import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
-
+@IgnoreExtraProperties
 public class ImageArray {
 
     private String name;
     private Date date;
-    private byte[] image;
+
+    //Could not serialize object. Serializing Arrays is not supported, please use Lists instead
+    //private byte[] image;
+    private List<Integer> image;
 
 
     public String getName() {
@@ -27,12 +32,11 @@ public class ImageArray {
     public void setDate(Date date) {
         this.date = date;
     }
-
-    public byte[] getImage() {
+    public List<Integer> getImage() {
         return image;
     }
 
-    public void setImage(byte[] image) {
+    public void setImage(List<Integer> image) {
         this.image = image;
     }
 
@@ -43,22 +47,20 @@ public class ImageArray {
         ImageArray that = (ImageArray) o;
         return Objects.equals(name, that.name) &&
                 Objects.equals(date, that.date) &&
-                Arrays.equals(image, that.image);
+                Objects.equals(image, that.image);
     }
 
     @Override
     public int hashCode() {
-        int result = Objects.hash(name, date);
-        result = 31 * result + Arrays.hashCode(image);
-        return result;
+        return Objects.hash(name, date, image);
     }
 
     @Override
     public String toString() {
-        return "ImageArray {" +
+        return "ImageArray{" +
                 "name='" + name + '\'' +
                 ", date=" + date +
-                ",\n image=" + Arrays.toString(image) +
+                ", image=" + image +
                 '}';
     }
 }
