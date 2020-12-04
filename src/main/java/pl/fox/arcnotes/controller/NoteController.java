@@ -3,6 +3,7 @@ package pl.fox.arcnotes.controller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.fox.arcnotes.model.ImageArray;
@@ -53,10 +54,8 @@ public class NoteController {
     }
 
     //TEMPORARY / JUST FOR TESTING PURPOSES
-    public byte[] extractBytes (String ImageName) throws IOException {
-        // open image
-        File imgPath = new File(ImageName);
-        BufferedImage bufferedImage = ImageIO.read(imgPath);
+    public byte[] extractBytes (String imageName) throws IOException {
+        BufferedImage bufferedImage = ImageIO.read(new ClassPathResource(imageName).getFile());
 
         // get DataBufferBytes from Raster
         WritableRaster raster = bufferedImage .getRaster();
