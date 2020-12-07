@@ -16,9 +16,13 @@
 
     <properties>
         <java.version>11</java.version>
+        <spring-cloud.version>Hoxton.SR8</spring-cloud.version>
     </properties>
 
     <dependencies>
+
+        <!--  SPRING BOOT DEPENDENCIES       -->
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
@@ -29,6 +33,9 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
+        <!--  SPRING BOOT DEPENDENCIES       -->
+
+        <!--  GOOGLE DEPENDENCIES   -->
 
         <dependency>
             <groupId>com.google.firebase</groupId>
@@ -51,15 +58,49 @@
             <version>0.22.1</version>
         </dependency>
 
+        <!-- https://cloud.google.com/vision/docs/adding-spring       -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-gcp-dependencies</artifactId>
+            <version>1.2.5.RELEASE</version>
+            <type>pom</type>
+            <scope>import</scope>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-gcp-starter -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-gcp-starter</artifactId>
+            <version>1.2.6.RELEASE</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-gcp-starter-vision -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-gcp-starter-vision</artifactId>
+        </dependency>
+
+
         <!-- https://mvnrepository.com/artifact/com.google.cloud/google-cloud-vision -->
         <dependency>
             <groupId>com.google.cloud</groupId>
             <artifactId>google-cloud-vision</artifactId>
             <version>1.100.7</version>
         </dependency>
-
-
     </dependencies>
+
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>${spring-cloud.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <build>
         <plugins>

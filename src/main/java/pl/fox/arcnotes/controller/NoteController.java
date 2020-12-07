@@ -44,6 +44,13 @@ public class NoteController {
         return service.getByName(name);
     }
 
+    @GetMapping("/g")
+    public String test() throws IOException {
+        BufferedImage bufferedImage = ImageIO.read(new ClassPathResource("maxresdefault.jpg").getFile());
+
+        return service.visionIt(bufferedImage);
+    }
+
 
     //@TODO: Learn how to store images instead of byte array, getting "UNAVAILABLE: 413:Request Entity Too Large"
 
