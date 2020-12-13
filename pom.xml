@@ -58,34 +58,11 @@
             <version>0.22.1</version>
         </dependency>
 
-        <!-- https://cloud.google.com/vision/docs/adding-spring       -->
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-gcp-dependencies</artifactId>
-            <version>1.2.5.RELEASE</version>
-            <type>pom</type>
-            <scope>import</scope>
-        </dependency>
-
-        <!-- https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-gcp-starter -->
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-gcp-starter</artifactId>
-            <version>1.2.6.RELEASE</version>
-        </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-gcp-starter-vision -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-gcp-starter-vision</artifactId>
-        </dependency>
-
-
-        <!-- https://mvnrepository.com/artifact/com.google.cloud/google-cloud-vision -->
-        <dependency>
-            <groupId>com.google.cloud</groupId>
-            <artifactId>google-cloud-vision</artifactId>
-            <version>1.100.7</version>
         </dependency>
     </dependencies>
 
