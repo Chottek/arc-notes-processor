@@ -4,8 +4,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class ArcNotesProcessorApplication {
+public class ArcApplication {
     public static void main(String[] args) {
-        SpringApplication.run(ArcNotesProcessorApplication.class, args);
+        SpringApplication.run(ArcApplication.class, args);
     }
 }

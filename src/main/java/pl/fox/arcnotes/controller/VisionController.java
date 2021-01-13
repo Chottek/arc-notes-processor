@@ -23,12 +23,8 @@ public class VisionController {
 
     @RequestMapping("/getLabelDetection")
     public String getLabelDetection(){
-
-        AnnotateImageResponse res = template.analyzeImage(loader.getResource("/note.jpg"), Feature.Type.LABEL_DETECTION);
-
-        return res.getLabelAnnotationsList().toString();
+        return template.analyzeImage(loader.getResource("/cat.jpg"), Feature.Type.LABEL_DETECTION)
+                .getLabelAnnotationsList()
+                .toString();
     }
-
-
-
 }
