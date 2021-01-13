@@ -13,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import pl.fox.arcnotes.model.ImageArray;
-import pl.fox.arcnotes.service.NoteService;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -31,13 +30,12 @@ import java.util.stream.Collectors;
 public class NoteController {
 
     private static final Logger LOG = LoggerFactory.getLogger(NoteController.class);
-    private final NoteService service;
+
     private final CloudVisionTemplate template;
     private final ResourceLoader loader;
 
     @Autowired
-    public NoteController(NoteService service, CloudVisionTemplate template, ResourceLoader loader) {
-        this.service = service;
+    public NoteController(CloudVisionTemplate template, ResourceLoader loader) {
         this.template = template;
         this.loader = loader;
     }
@@ -54,23 +52,7 @@ public class NoteController {
         return new ModelAndView("result", labels);
     }
 
-    @PostMapping("/upload")
-    public ResponseEntity<String> uploadImage(@RequestBody ImageArray ia) throws ExecutionException, InterruptedException {
-        LOG.info("IMAGE BYTESIZE: {}", ia.getImage().size());
-        return ResponseEntity.ok(service.saveImage(ia));
-    }
 
-    @GetMapping("/get")
-    public ImageArray getImage(@RequestParam String name) throws InterruptedException, ExecutionException{
-        return service.getByName(name);
-    }
-
-    @GetMapping("/g")
-    public String test() throws IOException {
-        BufferedImage bufferedImage = ImageIO.read(new ClassPathResource("maxresdefault.jpg").getFile());
-
-        return service.visionIt(bufferedImage);
-    }
 
 
     //@TODO: Learn how to store images instead of byte array, getting "UNAVAILABLE: 413:Request Entity Too Large"
@@ -93,7 +75,7 @@ public class NoteController {
 
         imageArr.setImage(s);
 
-        service.saveImage(imageArr);
+
         return "HENLO";
     }
 

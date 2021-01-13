@@ -1,21 +1,16 @@
 package pl.fox.arcnotes.model;
 
-import com.google.cloud.firestore.annotation.IgnoreExtraProperties;
 
 import java.sql.Date;
 import java.util.List;
 import java.util.Objects;
 
-@IgnoreExtraProperties
 public class ImageArray {
 
     private String name;
     private Date date;
 
-    //Could not serialize object. Serializing Arrays is not supported, please use Lists instead
-    //private byte[] image;
     private List<Integer> image;
-
 
     public String getName() {
         return name;
