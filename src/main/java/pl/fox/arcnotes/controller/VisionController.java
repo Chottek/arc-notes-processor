@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/vision/")
 public class VisionController {
 
     private final CloudVisionTemplate template;
@@ -23,7 +22,7 @@ public class VisionController {
 
     @RequestMapping("/getLabelDetection")
     public String getLabelDetection(){
-        return template.analyzeImage(loader.getResource("/cat.jpg"), Feature.Type.LABEL_DETECTION)
+        return template.analyzeImage(loader.getResource("classpath:/maxresdefault.jpg"), Feature.Type.LABEL_DETECTION)
                 .getLabelAnnotationsList()
                 .toString();
     }
