@@ -21,7 +21,6 @@ public class ProcessingService {
     private static final String FILE_EXT = "wav";
     private static final AudioFileFormat.Type FILE_TYPE = AudioFileFormat.Type.WAVE;
 
-
     /*
     * @TODO:
         File file = new File(filePath);
@@ -30,7 +29,6 @@ public class ProcessingService {
         List<AudioInputStream> clips = new ArrayList<>();
         file.forEach(e -> {clips.add(AudioSystem.getAudioInputStream(e))});
     * */
-
 
     private String returnFile(List<AudioInputStream> clips) {
         if (clips.size() == 0 || clips.size() == 1) {
