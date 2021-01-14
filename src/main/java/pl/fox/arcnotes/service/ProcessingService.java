@@ -54,7 +54,7 @@ public class ProcessingService {
     private PredictResponse buildResponse() throws IOException{
         Image img = Image.newBuilder().setImageBytes(ByteString.copyFrom(
                 Files.readAllBytes(loader.getResource("classpath:/maxresdefault.jpg").getFile().toPath()))).build();
-
+            //@TODO: Remove loader, leave just bytes, cos' bytes will be sent from Angular server
         return PredictionServiceClient.create().predict(
                 PredictRequest.newBuilder()
                         .putParams("score_threshold", String.valueOf(SCORE_THRESHOLD))
@@ -62,7 +62,6 @@ public class ProcessingService {
                         .setName(ModelName.of(PROJECT_ID, LOCATION, VISION_MODEL).toString())
                         .build());
     }
-
 
 
     /*
