@@ -36,7 +36,7 @@ public class ClassifierController {
 
             PredictResponse res = PredictionServiceClient.create().predict(
                     PredictRequest.newBuilder()
-                    .putParams("score_treshold", String.valueOf(SCORE_THRESHOLD))
+                    .putParams("score_threshold", String.valueOf(SCORE_THRESHOLD))
                     .setPayload(ExamplePayload.newBuilder().setImage(img).build())
                     .setName(name.toString())
                     .build());
