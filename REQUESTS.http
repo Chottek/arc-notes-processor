@@ -1,5 +1,8 @@
 GET http://localhost:8080/api/notes/testIt
 Accept: application/json
 
+###
+GET http://localhost:8080/api/classifier/check
+Accept: application/json
 
 

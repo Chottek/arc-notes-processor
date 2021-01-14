@@ -4,6 +4,8 @@ import com.google.cloud.automl.v1.*;
 import com.google.protobuf.ByteString;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,13 +26,21 @@ public class ClassifierController {
     private static final String VISION_MODEL = "IOD5055336761211748352"; //google taught vision api serial
     private static final double SCORE_THRESHOLD = 0.6;      //Border value of results score (getAll > SCORE_THRESHOLD)
 
+    private final ResourceLoader loader;
+
+    @Autowired
+    public ClassifierController(ResourceLoader loader){
+        this.loader = loader;
+    }
+
+
     @GetMapping("/check")
-    public ResponseEntity<Void> test(){
+    public ResponseEntity<String> test(){
         try{
             Image img = Image
                     .newBuilder()
                     .setImageBytes(ByteString.copyFrom(
-                            Files.readAllBytes(Paths.get("classpath:/maxresdefault.jpg")))).build();
+                            Files.readAllBytes(loader.getResource("classpath:/maxresdefault.jpg").getFile().toPath()))).build();
 
             ModelName name = ModelName.of(PROJECT_ID, LOCATION, VISION_MODEL);
 
@@ -41,11 +51,16 @@ public class ClassifierController {
                     .setName(name.toString())
                     .build());
 
-            res.getPayloadList().forEach(pl -> LOG.info("Name: {}, Score: {}", pl.getDisplayName(), pl.getClassification().getScore()));
+            StringBuilder sb = new StringBuilder();
+            res.getPayloadList().forEach(pl ->
+                sb.append("Name: ").append(pl.getDisplayName()).append(", score: ").append(pl.getClassification().getScore()).append("\n")
+            );
+
+            LOG.info(sb.toString());
 
         }catch(IOException ie){
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.badRequest().body(ie.getLocalizedMessage());
         }
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok("Notes Are Working!");
     }
 }
