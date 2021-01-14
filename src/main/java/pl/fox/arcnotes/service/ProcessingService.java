@@ -16,8 +16,6 @@ import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import java.io.IOException;
 import java.io.SequenceInputStream;
-import java.nio.file.Files;
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 @Service
@@ -40,8 +38,19 @@ public class ProcessingService {
         this.loader = loader;
     }
 
+
+    /*
+    *
+    * 2021-01-14 18:04:22.473 ERROR 12204 --- [   NoteThread-1] i.g.i.ManagedChannelOrphanWrapper
+    *  : *~*~*~ Channel ManagedChannelImpl{logId=3, target=automl.googleapis.com:443} was not shutdown properly!!! ~*~*~*
+    Make sure to call shutdown()/shutdownNow() and wait until awaitTermination() returns true.
+    * java.lang.RuntimeException: ManagedChannel allocation site
+    *
+    * */
+    //@TODO: Got this multithreading error, solve it later!
+
     @Async
-    public CompletableFuture<List<Note>> process(MultipartFile file) throws IOException{
+    public CompletableFuture<java.util.List<Note>> process(MultipartFile file) throws IOException{
         java.util.List<Note> notes = new java.util.ArrayList<>();
         PredictResponse response = buildResponse(file);
         StringBuilder sb = new StringBuilder();

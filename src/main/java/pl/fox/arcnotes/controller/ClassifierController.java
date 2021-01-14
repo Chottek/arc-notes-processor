@@ -2,10 +2,7 @@ package pl.fox.arcnotes.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import pl.fox.arcnotes.model.Note;
 import pl.fox.arcnotes.service.ProcessingService;
@@ -24,7 +21,7 @@ public class ClassifierController {
         this.service = service;
     }
 
-    @GetMapping("/process")
+    @PostMapping("/process")
     public ResponseEntity<String> process(@RequestBody MultipartFile file){
         java.util.List<Note> s;
         try{
