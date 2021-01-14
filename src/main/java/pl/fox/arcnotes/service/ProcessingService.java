@@ -14,6 +14,7 @@ import pl.fox.arcnotes.model.Note;
 import javax.sound.sampled.AudioFileFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.IOException;
 import java.io.SequenceInputStream;
 import java.util.concurrent.CompletableFuture;
@@ -60,7 +61,7 @@ public class ProcessingService {
      */
 
     @Async
-    public CompletableFuture<java.util.List<Note>> process(MultipartFile file) throws IOException{
+    public CompletableFuture<MultipartFile> process(MultipartFile file) throws IOException, UnsupportedAudioFileException{
         java.util.List<Note> notes = new java.util.ArrayList<>();
         PredictResponse response = buildResponse(file);
         StringBuilder sb = new StringBuilder();
@@ -72,7 +73,7 @@ public class ProcessingService {
 
         LOG.info("Size: {}, Notes: {}",notes.size(), sb.toString());
 
-        return CompletableFuture.completedFuture(notes);
+        return CompletableFuture.completedFuture(mergeNotes(getClips(notes)));
     }
 
     private PredictResponse buildResponse(MultipartFile file) throws IOException{
@@ -99,10 +100,15 @@ public class ProcessingService {
         file.forEach(e -> {clips.add(AudioSystem.getAudioInputStream(e))});
     * */
 
-    private String returnFile(java.util.List<AudioInputStream> clips) {
-        if (clips.size() == 0 || clips.size() == 1) {
+    private MultipartFile mergeNotes(java.util.List<AudioInputStream> clips) {
+        if (clips.size() == 0) {
             return null;
         }
+
+        if(clips.size() == 1){
+            return AudioSystem.write(clips.get(0), FILE_TYPE, new java.io.File());  //@TODO: Figure out what should be in constructor of File();
+        }
+
 
         String res = java.util.UUID.randomUUID().toString().concat(FILE_EXT);
         AudioInputStream appendedFiles = null;
@@ -124,7 +130,22 @@ public class ProcessingService {
         } catch (IOException ie) {
             LOG.error("{}", ie.getMessage());
         }
-        return res;
+        return new //MULTIPARTFILE file <_----- HERE
+    }
+
+    private java.util.List<AudioInputStream> getClips(java.util.List<Note> notes) throws IOException, UnsupportedAudioFileException {
+        java.util.List<AudioInputStream> musicFiles = new java.util.ArrayList<>();                  // init AudioInputStream list
+        java.util.Map<String, Note> noteMap = new java.util.HashMap<>();                            // init HashMap
+
+        notes.stream().filter(n -> !noteMap.containsKey(n.getType())).forEach(n -> noteMap.put(n.getType(), n));    // Add notes to hashmap by key
+
+        for(String key: noteMap.keySet()){
+            musicFiles.add(AudioSystem.getAudioInputStream(new java.io.File(key)));
+        }
+
+        LOG.info("Loaded {} music files", musicFiles.size());
+
+        return musicFiles;
     }
 
 

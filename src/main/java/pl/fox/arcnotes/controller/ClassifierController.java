@@ -7,6 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 import pl.fox.arcnotes.model.Note;
 import pl.fox.arcnotes.service.ProcessingService;
 
+import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 
@@ -23,12 +24,12 @@ public class ClassifierController {
 
     @PostMapping("/process")
     public ResponseEntity<String> process(@RequestBody MultipartFile file){
-        java.util.List<Note> s;
+        MultipartFile f;
         try{
-            s = service.process(file).get();
-        }catch(IOException | InterruptedException | ExecutionException ie){
+           f = service.process(file).get();
+        }catch(IOException | InterruptedException | ExecutionException | UnsupportedAudioFileException ie){
             return ResponseEntity.badRequest().body(ie.getLocalizedMessage());
         }
-        return ResponseEntity.ok("Notes Are Working! Length: " + s.size());
+        return ResponseEntity.ok("Notes Are Working! Size: " + f.getSize());
     }
 }
