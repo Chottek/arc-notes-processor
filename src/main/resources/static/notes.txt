@@ -1,0 +1,13 @@
+This directory contains sounds of
+C
+D
+E
+F
+G
+A
+H
+C
+notes in wave (.wav) format.
+These files will be merged to one soundfile
+based on notes processing and returned to frontend server
+as a response
