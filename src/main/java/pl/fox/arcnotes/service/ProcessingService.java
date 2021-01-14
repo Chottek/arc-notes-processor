@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import pl.fox.arcnotes.model.Note;
 
@@ -15,6 +16,8 @@ import javax.sound.sampled.AudioSystem;
 import java.io.IOException;
 import java.io.SequenceInputStream;
 import java.nio.file.Files;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 public class ProcessingService {
@@ -36,7 +39,8 @@ public class ProcessingService {
         this.loader = loader;
     }
 
-    public java.util.List<Note> process() throws IOException{
+    @Async
+    public CompletableFuture<List<Note>> process() throws IOException{
         java.util.List<Note> notes = new java.util.ArrayList<>();
         PredictResponse response = buildResponse();
         StringBuilder sb = new StringBuilder();
@@ -48,7 +52,7 @@ public class ProcessingService {
 
         LOG.info("Size: {}, Notes: {}",notes.size(), sb.toString());
 
-        return notes;
+        return CompletableFuture.completedFuture(notes);
     }
 
     private PredictResponse buildResponse() throws IOException{

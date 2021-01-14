@@ -10,6 +10,7 @@ import pl.fox.arcnotes.model.Note;
 import pl.fox.arcnotes.service.ProcessingService;
 
 import java.io.IOException;
+import java.util.concurrent.ExecutionException;
 
 @RestController
 @RequestMapping("/api/classifier")
@@ -26,8 +27,8 @@ public class ClassifierController {
     public ResponseEntity<String> process(){
         java.util.List<Note> s;
         try{
-            s = service.process();
-        }catch(IOException ie){
+            s = service.process().get();
+        }catch(IOException | InterruptedException | ExecutionException ie){
             return ResponseEntity.badRequest().body(ie.getLocalizedMessage());
         }
         return ResponseEntity.ok("Notes Are Working! Length: " + s.size());
