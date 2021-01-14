@@ -60,6 +60,22 @@ public class ProcessingService {
      @TODO: Got this error on uploading one more file when Async is off <- fix it and take care of the upper one!
      */
 
+
+    /*
+    c.g.a.oauth2.DefaultCredentialsProvider  : Your application has authenticated using end user credentials from Google Cloud SDK.
+    We recommend that most server applications use service accounts instead. If your application continues to use end user credentials from Cloud SDK,
+    you might receive a "quota exceeded" or "API not enabled" error. For more information about service accounts, see https://cloud.google.com/docs/authentication/.
+    o.s.c.g.core.DefaultCredentialsProvider  : Default credentials provider for user 764086051850-6qr4p6gpi6hn506pt8ejuq83di341hur.apps.googleusercontent.com
+     Scopes in use by default credentials: [https://www.googleapis.com/auth/pubsub, https://www.googleapis.com/auth/spanner.admin, https://www.googleapis.com/auth/spanner.data,
+     https://www.googleapis.com/auth/datastore, https://www.googleapis.com/auth/sqlservice.admin,
+     https://www.googleapis.com/auth/devstorage.read_only, https://www.googleapis.com/auth/devstorage.read_write,
+      https://www.googleapis.com/auth/cloudruntimeconfig, https://www.googleapis.com/auth/trace.append,
+       https://www.googleapis.com/auth/cloud-platform, https://www.googleapis.com/auth/cloud-vision,
+       https://www.googleapis.com/auth/bigquery, https://www.googleapis.com/auth/monitoring.write]
+       @TODO: Resolve this problem, that is connected to the upper case
+     :*/
+
+
     @Async
     public CompletableFuture<MultipartFile> process(MultipartFile file) throws IOException, UnsupportedAudioFileException{
         java.util.List<Note> notes = new java.util.ArrayList<>();
