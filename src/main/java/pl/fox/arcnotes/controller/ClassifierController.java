@@ -21,7 +21,7 @@ public class ClassifierController {
 
     private static final String PROJECT_ID = "150146461045";             //google project id
     private static final String LOCATION = "us-central1";                //google project location
-    private static final String VISION_MODEL = "IOD5055336761211748352"; //google tought vision api serial
+    private static final String VISION_MODEL = "IOD5055336761211748352"; //google taught vision api serial
     private static final double SCORE_THRESHOLD = 0.6;      //Border value of results score (getAll > SCORE_THRESHOLD)
 
     @GetMapping("/check")
