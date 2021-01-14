@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import pl.fox.arcnotes.model.Note;
 
 import javax.sound.sampled.AudioFileFormat;
@@ -40,9 +41,9 @@ public class ProcessingService {
     }
 
     @Async
-    public CompletableFuture<List<Note>> process() throws IOException{
+    public CompletableFuture<List<Note>> process(MultipartFile file) throws IOException{
         java.util.List<Note> notes = new java.util.ArrayList<>();
-        PredictResponse response = buildResponse();
+        PredictResponse response = buildResponse(file);
         StringBuilder sb = new StringBuilder();
 
         response.getPayloadList().forEach(pl -> {
@@ -55,14 +56,16 @@ public class ProcessingService {
         return CompletableFuture.completedFuture(notes);
     }
 
-    private PredictResponse buildResponse() throws IOException{
-        Image img = Image.newBuilder().setImageBytes(ByteString.copyFrom(
-                Files.readAllBytes(loader.getResource("classpath:/maxresdefault.jpg").getFile().toPath()))).build();
-            //@TODO: Remove loader, leave just bytes, cos' bytes will be sent from Angular server
+    private PredictResponse buildResponse(MultipartFile file) throws IOException{
+//        Image img = Image.newBuilder().setImageBytes(ByteString.copyFrom(
+//                Files.readAllBytes(loader.getResource("classpath:/maxresdefault.jpg").getFile().toPath()))).build();
+
+//       Image img = Image.newBuilder().setImageBytes(ByteString.copyFrom(file.getBytes())).build();
+
         return PredictionServiceClient.create().predict(
                 PredictRequest.newBuilder()
                         .putParams("score_threshold", String.valueOf(SCORE_THRESHOLD))
-                        .setPayload(ExamplePayload.newBuilder().setImage(img).build())
+                        .setPayload(ExamplePayload.newBuilder().setImage(Image.newBuilder().setImageBytes(ByteString.copyFrom(file.getBytes())).build()).build())
                         .setName(ModelName.of(PROJECT_ID, LOCATION, VISION_MODEL).toString())
                         .build());
     }
