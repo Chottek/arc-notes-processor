@@ -49,6 +49,16 @@ public class ProcessingService {
     * */
     //@TODO: Got this multithreading error, solve it later!
 
+
+    /*
+     io.grpc.StatusRuntimeException: PERMISSION_DENIED:
+     Your application has authenticated using end user credentials from the Google Cloud SDK or Google Cloud Shell
+     which are not supported by the automl.googleapis.com. We recommend configuring the billing/quota_project setting
+     in gcloud or using a service account through the auth/impersonate_service_account setting.
+     For more information about service accounts and how to use them in your application, see https://cloud.google.com/docs/authentication/.
+     @TODO: Got this error on uploading one more file when Async is off <- fix it and take care of the upper one!
+     */
+
     @Async
     public CompletableFuture<java.util.List<Note>> process(MultipartFile file) throws IOException{
         java.util.List<Note> notes = new java.util.ArrayList<>();
