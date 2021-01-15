@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import pl.fox.arcnotes.service.ProcessingService;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Optional;
 
@@ -24,9 +25,9 @@ public class ClassifierController {
 
     @PostMapping("/process")
     public ResponseEntity process(@RequestBody MultipartFile file){
-        MultipartFile f;
+        File f;
         try{
-            Optional<MultipartFile> op = service.process(file);
+            Optional<File> op = service.process(file);
 
             if(op.isPresent()){
                 f = op.get();
