@@ -1,23 +1,24 @@
 package pl.fox.arcnotes.model;
 
+import javax.sound.sampled.AudioInputStream;
 import java.util.Objects;
 
 public class Note {
 
     private final String type;   //C, D, E, F, G, A, H, C
-    private final double score;  //Just of curiosity ;)
+    private final AudioInputStream soundFile;
 
-    public Note(String type, double score) {
+    public Note(String type, AudioInputStream soundFile) {
         this.type = type;
-        this.score = score;
+        this.soundFile = soundFile;
     }
 
     public String getType() {
         return type;
     }
 
-    public double getScore() {
-        return score;
+    public AudioInputStream getSoundFile() {
+        return soundFile;
     }
 
     @Override
@@ -25,20 +26,20 @@ public class Note {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Note note = (Note) o;
-        return Double.compare(note.score, score) == 0 &&
-                Objects.equals(type, note.type);
+        return Objects.equals(type, note.type) &&
+                Objects.equals(soundFile, note.soundFile);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(type, score);
+        return Objects.hash(type, soundFile);
     }
 
     @Override
     public String toString() {
         return "Note{" +
                 "type='" + type + '\'' +
-                ", score=" + score +
+                ", soundFile=" + soundFile +
                 '}';
     }
 }

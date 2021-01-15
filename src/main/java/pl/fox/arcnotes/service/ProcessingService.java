@@ -12,11 +12,13 @@ import org.springframework.util.ResourceUtils;
 import org.springframework.web.multipart.MultipartFile;
 import pl.fox.arcnotes.model.Note;
 
+import javax.annotation.PostConstruct;
 import javax.sound.sampled.AudioFileFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.SequenceInputStream;
 import java.util.List;
@@ -36,6 +38,22 @@ public class ProcessingService {
     private static final String FILE_EXT = "WAV";             //file extension static
     private static final AudioFileFormat.Type FILE_TYPE = AudioFileFormat.Type.WAVE;  //file type as codex to process
 
+    private final java.util.List<Note> notes = new java.util.ArrayList<>();
+
+    private final String[] notesArr = {"C", "D", "E", "F", "G", "A", "H"};
+
+    @PostConstruct
+    private void initNotesList(){
+        try{
+            for(String s: notesArr){
+                notes.add(new Note(s, AudioSystem.getAudioInputStream(ResourceUtils.getFile("classpath:" + s + "." + FILE_EXT))));
+                LOG.info("Initialized Note object of name: \"{}\" ", s);
+            }
+        } catch(UnsupportedAudioFileException | IOException e){
+            e.printStackTrace();
+        }
+    }
+
     public Optional<File> process(MultipartFile file) throws IOException {
         java.util.List<Note> notes = new java.util.ArrayList<>();
         PredictResponse response = buildResponse(file);
@@ -43,7 +61,11 @@ public class ProcessingService {
 
         response.getPayloadList().forEach(pl -> {
             sb.append(pl.getDisplayName()).append(" ");
-            notes.add(new Note(pl.getDisplayName(), pl.getClassification().getScore()));
+            for(Note n : this.notes){
+                if(n.getType().equals(pl.getDisplayName())){
+                    notes.add(n);
+                }
+            }
         });
 
         LOG.info("Size: {}, Notes: {}", notes.size(), sb.toString());
