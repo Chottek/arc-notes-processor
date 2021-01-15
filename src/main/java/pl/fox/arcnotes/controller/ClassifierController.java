@@ -2,6 +2,7 @@ package pl.fox.arcnotes.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -9,6 +10,8 @@ import pl.fox.arcnotes.service.ProcessingService;
 
 import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.IOException;
+import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 @RestController
@@ -23,16 +26,21 @@ public class ClassifierController {
     }
 
     @PostMapping("/process")
-    public ResponseEntity<MultipartFile> process(@RequestBody MultipartFile file){
+    public ResponseEntity process(@RequestBody MultipartFile file){
         MultipartFile f;
         try{
-           f = service.process(file).get();
-        }catch(IOException | InterruptedException | ExecutionException | UnsupportedAudioFileException ie){
-            return ResponseEntity.of(java.util.Optional.empty());
+            Optional<MultipartFile> op = service.process(file);
+
+            if(op.isPresent()){
+                f = op.get();
+
+                return ResponseEntity.ok()
+                        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + f.getName() + "\"")
+                        .body(f);
+            }
+        }catch(IOException ie){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("There was a problem processing file");
         }
-       // return ResponseEntity.ok().body(f);
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + f.getName() + "\"")
-                .body(f);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Too few notes to process");
     }
 }

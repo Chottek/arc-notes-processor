@@ -1,12 +1,10 @@
 package pl.fox.arcnotes.service;
 
 import com.google.cloud.automl.v1.*;
+import com.google.common.net.MediaType;
 import com.google.protobuf.ByteString;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -22,8 +20,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.SequenceInputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 @Service
@@ -36,26 +34,8 @@ public class ProcessingService {
     private static final String VISION_MODEL = "IOD5055336761211748352"; //google taught vision api serial
     private static final double SCORE_THRESHOLD = 0.6;      //Border value of results score (getAll > SCORE_THRESHOLD)
 
-    private static final String FILE_EXT = "wav";
-    private static final AudioFileFormat.Type FILE_TYPE = AudioFileFormat.Type.WAVE;
-
-    private final ResourceLoader loader;
-
-    @Autowired
-    public ProcessingService(ResourceLoader loader) {
-        this.loader = loader;
-    }
-
-
-    /*
-    *
-    * 2021-01-14 18:04:22.473 ERROR 12204 --- [   NoteThread-1] i.g.i.ManagedChannelOrphanWrapper
-    *  : *~*~*~ Channel ManagedChannelImpl{logId=3, target=automl.googleapis.com:443} was not shutdown properly!!! ~*~*~*
-    Make sure to call shutdown()/shutdownNow() and wait until awaitTermination() returns true.
-    * java.lang.RuntimeException: ManagedChannel allocation site
-    *
-    * */
-    //@TODO: Got this multithreading error, solve it later!
+    private static final String FILE_EXT = "WAV";             //file extension static
+    private static final AudioFileFormat.Type FILE_TYPE = AudioFileFormat.Type.WAVE;  //file type as codex to process
 
 
     /*
@@ -83,8 +63,8 @@ public class ProcessingService {
      :*/
 
 
-    @Async
-    public CompletableFuture<MultipartFile> process(MultipartFile file) throws IOException, UnsupportedAudioFileException {
+
+    public Optional<MultipartFile> process(MultipartFile file) throws IOException {
         java.util.List<Note> notes = new java.util.ArrayList<>();
         PredictResponse response = buildResponse(file);
         StringBuilder sb = new StringBuilder();
@@ -96,15 +76,17 @@ public class ProcessingService {
 
         LOG.info("Size: {}, Notes: {}", notes.size(), sb.toString());
 
-        return CompletableFuture.completedFuture(new MockMultipartFile("Henlo", new FileInputStream(Objects.requireNonNull(mergeNotes(getClips(notes))))));
+        Optional<File> fOpt = Optional.ofNullable(mergeNotes(getClips(notes), notes));
+
+        if(fOpt.isPresent()){
+            return Optional.of(new MockMultipartFile("name", new FileInputStream(fOpt.get())));
+        }
+        return Optional.empty();
     }
 
     private PredictResponse buildResponse(MultipartFile file) throws IOException {
 //        Image img = Image.newBuilder().setImageBytes(ByteString.copyFrom(
 //                Files.readAllBytes(loader.getResource("classpath:/maxresdefault.jpg").getFile().toPath()))).build();
-
-//       Image img = Image.newBuilder().setImageBytes(ByteString.copyFrom(file.getBytes())).build();
-
         return PredictionServiceClient.create().predict(
                 PredictRequest.newBuilder()
                         .putParams("score_threshold", String.valueOf(SCORE_THRESHOLD))
@@ -114,18 +96,9 @@ public class ProcessingService {
     }
 
 
-    /*
-    * @TODO:
-        File file = new File(filePath);
-        AudioInputStream clip = AudioSystem.getAudioInputStream(file); //THROWS EXCEPTION
-        List<File> file = new ArrayList<>();
-        List<AudioInputStream> clips = new ArrayList<>();
-        file.forEach(e -> {clips.add(AudioSystem.getAudioInputStream(e))});
-    * */
-
-    private File mergeNotes(java.util.List<AudioInputStream> clips) throws IOException {
+    private File mergeNotes(java.util.List<AudioInputStream> clips, java.util.List<Note> notes) throws IOException {
         if (clips.size() < 2) {
-            LOG.error("Too few notes read");
+            LOG.error("Too few music files read");
             return null;
         }
 
@@ -156,22 +129,22 @@ public class ProcessingService {
 
     private java.util.List<AudioInputStream> getClips(java.util.List<Note> notes) {
         java.util.List<AudioInputStream> musicFiles = new java.util.ArrayList<>();                  // init AudioInputStream list
-        java.util.Map<String, Note> noteMap = new java.util.HashMap<>();                            // init HashMap
 
-        notes.stream().filter(n -> !noteMap.containsKey(n.getType())).forEach(n -> noteMap.put(n.getType(), n));    // Add notes to hashmap by key
+//        java.util.Map<String, Note> noteMap = new java.util.HashMap<>();                            // init HashMap
+//        notes.stream().filter(n -> !noteMap.containsKey(n.getType())).forEach(n -> noteMap.put(n.getType(), n));    // Add notes to hashmap by key
 
         try{
-            for (String key : noteMap.keySet()) {
-                LOG.info("{}", noteMap.keySet());
 
-                File file = ResourceUtils.getFile("classpath:" + key + "." + FILE_EXT);
-
-                musicFiles.add(AudioSystem.getAudioInputStream(file)); //TODO: javax.sound.sampled.UnsupportedAudioFileException: File of unsupported format
+            for(Note n : notes){
+                musicFiles.add(AudioSystem.getAudioInputStream(ResourceUtils.getFile("classpath:" + n.getType() + "." + FILE_EXT)));
             }
+
+//            for (String key : noteMap.keySet()) {
+//                musicFiles.add(AudioSystem.getAudioInputStream(ResourceUtils.getFile("classpath:" + key + "." + FILE_EXT)));
+//            }
         }catch(IOException | UnsupportedAudioFileException ie){
             ie.printStackTrace();
         }
-
 
         LOG.info("Loaded {} music files", musicFiles.size());
 
