@@ -77,7 +77,7 @@ public class ProcessingService {
 
 
     @Async
-    public CompletableFuture<MultipartFile> process(MultipartFile file) throws IOException, UnsupportedAudioFileException{
+    public CompletableFuture<MultipartFile> process(MultipartFile file) throws IOException, UnsupportedAudioFileException {
         java.util.List<Note> notes = new java.util.ArrayList<>();
         PredictResponse response = buildResponse(file);
         StringBuilder sb = new StringBuilder();
@@ -87,12 +87,12 @@ public class ProcessingService {
             notes.add(new Note(pl.getDisplayName(), pl.getClassification().getScore()));
         });
 
-        LOG.info("Size: {}, Notes: {}",notes.size(), sb.toString());
+        LOG.info("Size: {}, Notes: {}", notes.size(), sb.toString());
 
         return CompletableFuture.completedFuture(mergeNotes(getClips(notes)));
     }
 
-    private PredictResponse buildResponse(MultipartFile file) throws IOException{
+    private PredictResponse buildResponse(MultipartFile file) throws IOException {
 //        Image img = Image.newBuilder().setImageBytes(ByteString.copyFrom(
 //                Files.readAllBytes(loader.getResource("classpath:/maxresdefault.jpg").getFile().toPath()))).build();
 
@@ -121,10 +121,9 @@ public class ProcessingService {
             return null;
         }
 
-        if(clips.size() == 1){
+        if (clips.size() == 1) {
             return AudioSystem.write(clips.get(0), FILE_TYPE, new java.io.File());  //@TODO: Figure out what should be in constructor of File();
         }
-
 
         String res = java.util.UUID.randomUUID().toString().concat(FILE_EXT);
         AudioInputStream appendedFiles = null;
@@ -138,7 +137,7 @@ public class ProcessingService {
             }
             appendedFiles = new AudioInputStream(
                     new SequenceInputStream(appendedFiles, clips.get(i + 1)), appendedFiles.getFormat(),
-                            appendedFiles.getFrameLength() + clips.get(i + 1).getFrameLength());
+                    appendedFiles.getFrameLength() + clips.get(i + 1).getFrameLength());
         }
         try {
             assert appendedFiles != null;
@@ -146,7 +145,7 @@ public class ProcessingService {
         } catch (IOException ie) {
             LOG.error("{}", ie.getMessage());
         }
-        return new //MULTIPARTFILE file <_----- HERE
+        return new  //MULTIPARTFILE file <_----- HERE
     }
 
     private java.util.List<AudioInputStream> getClips(java.util.List<Note> notes) throws IOException, UnsupportedAudioFileException {
@@ -155,7 +154,7 @@ public class ProcessingService {
 
         notes.stream().filter(n -> !noteMap.containsKey(n.getType())).forEach(n -> noteMap.put(n.getType(), n));    // Add notes to hashmap by key
 
-        for(String key: noteMap.keySet()){
+        for (String key : noteMap.keySet()) {
             musicFiles.add(AudioSystem.getAudioInputStream(new java.io.File(key)));
         }
 
