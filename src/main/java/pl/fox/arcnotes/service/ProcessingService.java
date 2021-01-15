@@ -47,9 +47,9 @@ public class ProcessingService {
     private void initNotesList() {
         try {
             for (String s : notesArr) {
-                notes.add(new Note(s, AudioSystem.getAudioInputStream(ResourceUtils.getFile("classpath:" + NOTES_PATH +s + "." + FILE_EXT))));
-                LOG.info("Initialized Note object of name: \"{}\" ", s);
+                notes.add(new Note(s, AudioSystem.getAudioInputStream(ResourceUtils.getFile("classpath:" + NOTES_PATH + s + "." + FILE_EXT))));
             }
+            LOG.info("Finished Notes initializing [size: {}]", notes.size());
         } catch (UnsupportedAudioFileException | IOException e) {
             e.printStackTrace();
         }
