@@ -117,12 +117,9 @@ public class ProcessingService {
     * */
 
     private MultipartFile mergeNotes(java.util.List<AudioInputStream> clips) {
-        if (clips.size() == 0) {
+        if (clips.size() < 2) {
+            LOG.error("Too few notes read");
             return null;
-        }
-
-        if (clips.size() == 1) {
-            return AudioSystem.write(clips.get(0), FILE_TYPE, new java.io.File());  //@TODO: Figure out what should be in constructor of File();
         }
 
         String res = java.util.UUID.randomUUID().toString().concat(FILE_EXT);
@@ -162,6 +159,4 @@ public class ProcessingService {
 
         return musicFiles;
     }
-
-
 }

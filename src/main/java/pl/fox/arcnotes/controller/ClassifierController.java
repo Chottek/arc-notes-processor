@@ -1,6 +1,7 @@
 package pl.fox.arcnotes.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -29,6 +30,9 @@ public class ClassifierController {
         }catch(IOException | InterruptedException | ExecutionException | UnsupportedAudioFileException ie){
             return ResponseEntity.of(java.util.Optional.empty());
         }
-        return ResponseEntity.ok().body(f);
+       // return ResponseEntity.ok().body(f);
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + f.getName() + "\"")
+                .body(f);
     }
 }
