@@ -37,22 +37,25 @@ public class ProcessingService {
 
     private static final String FILE_EXT = "WAV";             //file extension static
     private static final AudioFileFormat.Type FILE_TYPE = AudioFileFormat.Type.WAVE;  //file type as codex to process
+    private static final String NOTES_PATH = "notes/";
 
     private final java.util.List<Note> notes = new java.util.ArrayList<>();
 
     private final String[] notesArr = {"C", "D", "E", "F", "G", "A", "H"};
 
     @PostConstruct
-    private void initNotesList(){
-        try{
-            for(String s: notesArr){
-                notes.add(new Note(s, AudioSystem.getAudioInputStream(ResourceUtils.getFile("classpath:" + s + "." + FILE_EXT))));
+    private void initNotesList() {
+        try {
+            for (String s : notesArr) {
+                notes.add(new Note(s, AudioSystem.getAudioInputStream(ResourceUtils.getFile("classpath:" + NOTES_PATH +s + "." + FILE_EXT))));
                 LOG.info("Initialized Note object of name: \"{}\" ", s);
             }
-        } catch(UnsupportedAudioFileException | IOException e){
+        } catch (UnsupportedAudioFileException | IOException e) {
             e.printStackTrace();
         }
     }
+
+    //@TODO: Make use of inited notes
 
     public Optional<File> process(MultipartFile file) throws IOException {
         java.util.List<Note> notes = new java.util.ArrayList<>();
@@ -61,8 +64,8 @@ public class ProcessingService {
 
         response.getPayloadList().forEach(pl -> {
             sb.append(pl.getDisplayName()).append(" ");
-            for(Note n : this.notes){
-                if(n.getType().equals(pl.getDisplayName())){
+            for (Note n : this.notes) {
+                if (n.getType().equals(pl.getDisplayName())) {
                     notes.add(n);
                 }
             }
@@ -96,7 +99,7 @@ public class ProcessingService {
 
         List<AudioInputStream> clips = new java.util.ArrayList<>();
 
-        for(Note n: notes){
+        for (Note n : notes) {
             clips.add(audioMap.get(n.getType()));
         }
 
@@ -114,7 +117,7 @@ public class ProcessingService {
                     files.getFrameLength() + clips.get(i + 1).getFrameLength());
         }
 
-        File f = new File(".\\"+res+"."+FILE_EXT);
+        File f = new File(".\\" + res + "." + FILE_EXT);
 
         assert files != null;
         AudioSystem.write(files, FILE_TYPE, f);
@@ -125,20 +128,20 @@ public class ProcessingService {
     }
 
     private java.util.Map<String, AudioInputStream> getClips(java.util.List<Note> notes) {
-        if(notes.size() < 2){
+        if (notes.size() < 2) {
             return null;
         }
 
         java.util.Map<String, AudioInputStream> noteMap = new java.util.HashMap<>();  // init HashMap
 
-        try{
-            for(Note n : notes){
+        try {
+            for (Note n : notes) {
                 AudioInputStream ais = AudioSystem.getAudioInputStream(ResourceUtils.getFile("classpath:" + n.getType() + "." + FILE_EXT));
-                if(!noteMap.containsKey(n.getType())){
+                if (!noteMap.containsKey(n.getType())) {
                     noteMap.put(n.getType(), ais);
                 }
             }
-        }catch(IOException | UnsupportedAudioFileException ie){
+        } catch (IOException | UnsupportedAudioFileException ie) {
             ie.printStackTrace();
         }
 
