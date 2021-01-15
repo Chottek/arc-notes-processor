@@ -5,9 +5,12 @@ import com.google.protobuf.ByteString;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ResourceUtils;
 import org.springframework.web.multipart.MultipartFile;
 import pl.fox.arcnotes.model.Note;
 
@@ -15,8 +18,12 @@ import javax.sound.sampled.AudioFileFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.UnsupportedAudioFileException;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.SequenceInputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 @Service
@@ -89,7 +96,7 @@ public class ProcessingService {
 
         LOG.info("Size: {}, Notes: {}", notes.size(), sb.toString());
 
-        return CompletableFuture.completedFuture(mergeNotes(getClips(notes)));
+        return CompletableFuture.completedFuture(new MockMultipartFile("Henlo", new FileInputStream(Objects.requireNonNull(mergeNotes(getClips(notes))))));
     }
 
     private PredictResponse buildResponse(MultipartFile file) throws IOException {
@@ -116,44 +123,55 @@ public class ProcessingService {
         file.forEach(e -> {clips.add(AudioSystem.getAudioInputStream(e))});
     * */
 
-    private MultipartFile mergeNotes(java.util.List<AudioInputStream> clips) {
+    private File mergeNotes(java.util.List<AudioInputStream> clips) throws IOException {
         if (clips.size() < 2) {
             LOG.error("Too few notes read");
             return null;
         }
 
         String res = java.util.UUID.randomUUID().toString().concat(FILE_EXT);
-        AudioInputStream appendedFiles = null;
+        AudioInputStream files = null;
 
         for (int i = 0; i < clips.size() - 1; i++) {
             if (i == 0) {
-                appendedFiles = new AudioInputStream(
+                files = new AudioInputStream(
                         new SequenceInputStream(clips.get(i), clips.get(i + 1)), clips.get(i).getFormat(),
                         clips.get(i).getFrameLength() + clips.get(i + 1).getFrameLength());
                 continue;
             }
-            appendedFiles = new AudioInputStream(
-                    new SequenceInputStream(appendedFiles, clips.get(i + 1)), appendedFiles.getFormat(),
-                    appendedFiles.getFrameLength() + clips.get(i + 1).getFrameLength());
+            files = new AudioInputStream(
+                    new SequenceInputStream(files, clips.get(i + 1)), files.getFormat(),
+                    files.getFrameLength() + clips.get(i + 1).getFrameLength());
         }
-        try {
-            assert appendedFiles != null;
-            AudioSystem.write(appendedFiles, FILE_TYPE, new java.io.File(res));
-        } catch (IOException ie) {
-            LOG.error("{}", ie.getMessage());
-        }
-        return new  //MULTIPARTFILE file <_----- HERE
+
+        File f = new File(".\\"+res+"."+FILE_EXT);
+
+        assert files != null;
+        AudioSystem.write(files, FILE_TYPE, f);
+
+        LOG.info("Created new File: {}", f.getAbsolutePath());
+
+        return f;
     }
 
-    private java.util.List<AudioInputStream> getClips(java.util.List<Note> notes) throws IOException, UnsupportedAudioFileException {
+    private java.util.List<AudioInputStream> getClips(java.util.List<Note> notes) {
         java.util.List<AudioInputStream> musicFiles = new java.util.ArrayList<>();                  // init AudioInputStream list
         java.util.Map<String, Note> noteMap = new java.util.HashMap<>();                            // init HashMap
 
         notes.stream().filter(n -> !noteMap.containsKey(n.getType())).forEach(n -> noteMap.put(n.getType(), n));    // Add notes to hashmap by key
 
-        for (String key : noteMap.keySet()) {
-            musicFiles.add(AudioSystem.getAudioInputStream(new java.io.File(key)));
+        try{
+            for (String key : noteMap.keySet()) {
+                LOG.info("{}", noteMap.keySet());
+
+                File file = ResourceUtils.getFile("classpath:" + key + "." + FILE_EXT);
+
+                musicFiles.add(AudioSystem.getAudioInputStream(file)); //TODO: javax.sound.sampled.UnsupportedAudioFileException: File of unsupported format
+            }
+        }catch(IOException | UnsupportedAudioFileException ie){
+            ie.printStackTrace();
         }
+
 
         LOG.info("Loaded {} music files", musicFiles.size());
 
