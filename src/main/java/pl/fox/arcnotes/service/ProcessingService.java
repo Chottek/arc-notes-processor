@@ -5,8 +5,6 @@ import com.google.common.net.MediaType;
 import com.google.protobuf.ByteString;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ResourceUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -18,7 +16,6 @@ import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.SequenceInputStream;
 import java.util.List;
@@ -38,10 +35,13 @@ public class ProcessingService {
     private static final String FILE_EXT = "WAV";             //file extension static
     private static final AudioFileFormat.Type FILE_TYPE = AudioFileFormat.Type.WAVE;  //file type as codex to process
     private static final String NOTES_PATH = "notes/";
+    private static final String OUTPUT_PATH = "merged";
 
     private final java.util.List<Note> notes = new java.util.ArrayList<>();
 
     private final String[] notesArr = {"C", "D", "E", "F", "G", "A", "H"};
+
+    private AudioInputStream files_2;
 
     @PostConstruct
     private void initNotesList() {
@@ -58,7 +58,7 @@ public class ProcessingService {
     //@TODO: Make use of inited notes
 
     public Optional<File> process(MultipartFile file) throws IOException {
-        java.util.List<Note> notes = new java.util.ArrayList<>();
+        java.util.List<Note> notez = new java.util.ArrayList<>();
         PredictResponse response = buildResponse(file);
         StringBuilder sb = new StringBuilder();
 
@@ -66,14 +66,14 @@ public class ProcessingService {
             sb.append(pl.getDisplayName()).append(" ");
             for (Note n : this.notes) {
                 if (n.getType().equals(pl.getDisplayName())) {
-                    notes.add(n);
+                    notez.add(n);
                 }
             }
         });
 
-        LOG.info("Size: {}, Notes: {}", notes.size(), sb.toString());
+        LOG.info("Size: {}, Notes: {}", notez.size(), sb.toString());
 
-        return Optional.ofNullable(mergeNotes(getClips(notes), notes));
+        return Optional.ofNullable(mergeNotes(notez));
     }
 
     private PredictResponse buildResponse(MultipartFile file) throws IOException {
@@ -88,65 +88,32 @@ public class ProcessingService {
     }
 
 
-    private File mergeNotes(java.util.Map<String, AudioInputStream> audioMap, java.util.List<Note> notes) throws IOException {
-        if (notes.size() < 2) {
+    private File mergeNotes(java.util.List<Note> clips) throws IOException {
+        if (clips.size() < 2) {
             LOG.error("Too few notes found to make a music file!");
             return null;
         }
 
+        LOG.info("{}", clips.size());
+
         String res = java.util.UUID.randomUUID().toString().concat(FILE_EXT);
-        AudioInputStream files = null;
 
-        List<AudioInputStream> clips = new java.util.ArrayList<>();
+        AudioInputStream files = new AudioInputStream(new SequenceInputStream(
+                clips.get(0).getSoundFile(), clips.get(1).getSoundFile()), clips.get(0).getSoundFile().getFormat(),
+                clips.get(0).getSoundFile().getFrameLength() + clips.get(1).getSoundFile().getFrameLength());
 
-        for (Note n : notes) {
-            clips.add(audioMap.get(n.getType()));
-        }
-
-        LOG.info("Loaded audioclips: {}", clips.size());
-
-        for (int i = 0; i < clips.size() - 1; i++) {
-            if (i == 0) {
-                files = new AudioInputStream(
-                        new SequenceInputStream(clips.get(i), clips.get(i + 1)), clips.get(i).getFormat(),
-                        clips.get(i).getFrameLength() + clips.get(i + 1).getFrameLength());
-                continue;
-            }
+        for (int i = 1; i < clips.size() - 1; i++) {
             files = new AudioInputStream(
-                    new SequenceInputStream(files, clips.get(i + 1)), files.getFormat(),
-                    files.getFrameLength() + clips.get(i + 1).getFrameLength());
+                    new SequenceInputStream(files, clips.get(i + 1).getSoundFile()), files.getFormat(),
+                    files.getFrameLength() + clips.get(i + 1).getSoundFile().getFrameLength());
         }
 
-        File f = new File(".\\" + res + "." + FILE_EXT);
+        File f = new File(".\\" + OUTPUT_PATH + "\\" + res + "." + FILE_EXT);
 
-        assert files != null;
         AudioSystem.write(files, FILE_TYPE, f);
 
         LOG.info("Created new File: {}", f.getAbsolutePath());
 
         return f;
-    }
-
-    private java.util.Map<String, AudioInputStream> getClips(java.util.List<Note> notes) {
-        if (notes.size() < 2) {
-            return null;
-        }
-
-        java.util.Map<String, AudioInputStream> noteMap = new java.util.HashMap<>();  // init HashMap
-
-        try {
-            for (Note n : notes) {
-                AudioInputStream ais = AudioSystem.getAudioInputStream(ResourceUtils.getFile("classpath:" + n.getType() + "." + FILE_EXT));
-                if (!noteMap.containsKey(n.getType())) {
-                    noteMap.put(n.getType(), ais);
-                }
-            }
-        } catch (IOException | UnsupportedAudioFileException ie) {
-            ie.printStackTrace();
-        }
-
-        LOG.info("Loaded {} music files", noteMap.keySet().size());
-
-        return noteMap;
     }
 }
