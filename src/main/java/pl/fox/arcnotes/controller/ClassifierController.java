@@ -8,6 +8,13 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import pl.fox.arcnotes.service.ProcessingService;
 
+/**
+ * @author Chottek
+ * RestController on "/api/classifier" mapping
+ * that handles POST Http request and passes it to
+ * Autowired ProcessingService class
+ */
+
 @RestController
 @RequestMapping("/api/classifier")
 public class ClassifierController {
@@ -19,6 +26,11 @@ public class ClassifierController {
         this.service = service;
     }
 
+    /**
+     * Method that passes file to service and returns processed music file
+     * @param file Multipart file that contains notes image
+     * @return ResponseEntity with music file or with return ERROR information
+     */
     @PostMapping("/process")
     public ResponseEntity process(@RequestBody MultipartFile file){
         try{
