@@ -50,8 +50,6 @@ public class ProcessingService {
         }
     }
 
-    //@TODO: Make use of inited notes
-
     public Optional<File> process(MultipartFile file) throws IOException {
         java.util.List<Note> notez = new java.util.ArrayList<>();
         PredictResponse response = buildResponse(file);
@@ -70,8 +68,6 @@ public class ProcessingService {
 
         return Optional.ofNullable(merge(notez));
     }
-
-    //@TODO: Check this page: https://blog.karthicr.com/posts/2013/01/12/concatenate-wav-files-in-java/
 
     private PredictResponse buildResponse(MultipartFile file) throws IOException {
 //        Image img = Image.newBuilder().setImageBytes(ByteString.copyFrom(
