@@ -1,7 +1,6 @@
 package pl.fox.arcnotes.service;
 
 import com.google.cloud.automl.v1.*;
-import com.google.common.net.MediaType;
 import com.google.protobuf.ByteString;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +29,7 @@ public class ProcessingService {
 
     private static final String FILE_EXT = "WAV";             //file extension static
     private static final AudioFileFormat.Type FILE_TYPE = AudioFileFormat.Type.WAVE;  //file type as codex to process
-    private static final String NOTES_PATH = "notes/";
+    private static final String NOTES_PATH = "notes";
     private static final String OUTPUT_PATH = "merged";
 
     private final java.util.List<Note> notes = new java.util.ArrayList<>();
@@ -43,7 +42,7 @@ public class ProcessingService {
         try {
             for (String s : notesArr) {
                 notes.add(new Note(s, AudioSystem.getAudioInputStream(
-                        ResourceUtils.getFile("classpath:" + NOTES_PATH + s + "." + FILE_EXT))));
+                        ResourceUtils.getFile("classpath:" + NOTES_PATH + "/" + s + "." + FILE_EXT))));
             }
             LOG.info("Finished Notes initializing [size: {}]", notes.size());
         } catch (UnsupportedAudioFileException | IOException e) {
@@ -71,6 +70,8 @@ public class ProcessingService {
 
         return Optional.ofNullable(merge(notez));
     }
+
+    //@TODO: Check this page: https://blog.karthicr.com/posts/2013/01/12/concatenate-wav-files-in-java/
 
     private PredictResponse buildResponse(MultipartFile file) throws IOException {
 //        Image img = Image.newBuilder().setImageBytes(ByteString.copyFrom(
