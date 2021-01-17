@@ -8,10 +8,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import pl.fox.arcnotes.service.ProcessingService;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Optional;
-
 @RestController
 @RequestMapping("/api/classifier")
 public class ClassifierController {
@@ -25,18 +21,15 @@ public class ClassifierController {
 
     @PostMapping("/process")
     public ResponseEntity process(@RequestBody MultipartFile file){
-        File f;
         try{
-            Optional<File> op = service.process(file);
+            java.util.Optional<java.io.File> op = service.process(file);
 
             if(op.isPresent()){
-                f = op.get();
-
                 return ResponseEntity.ok()
-                        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + f.getName() + "\"")
-                        .body(f);
+                        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + op.get().getName() + "\"")
+                        .body(op.get());
             }
-        }catch(IOException ie){
+        }catch(java.io.IOException ie){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("There was a problem processing file");
         }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Too few notes to process");
