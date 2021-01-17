@@ -12,6 +12,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.SequenceInputStream;
 
+/**
+ * @author Chottek
+ * A class that contains List of music files and methods to process them
+ */
 @Repository
 public class NoteRepository {
 
@@ -26,6 +30,11 @@ public class NoteRepository {
 
     private final String[] notesArr = {"C", "D", "E", "F", "G", "A", "H"};
 
+
+    /**
+     * A method used to initialize list of notesm,
+     * gather music files as AudioInputStreams
+     */
     @PostConstruct
     private void initNotesList() {
         try {
@@ -39,6 +48,12 @@ public class NoteRepository {
         }
     }
 
+    /**
+     *
+     * @param notes List of notes gathered from Google Vision data
+     * @return File that contains a music file merged from notes
+     * @throws IOException Of writing to file
+     */
     public File merge(java.util.List<Note> notes) throws IOException{
         if (notes.size() < 2) {
             LOG.error("Too few notes found to make a music file!");

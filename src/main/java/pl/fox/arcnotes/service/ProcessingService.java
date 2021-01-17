@@ -11,12 +11,8 @@ import org.springframework.web.multipart.MultipartFile;
 import pl.fox.arcnotes.model.Note;
 import pl.fox.arcnotes.repository.NoteRepository;
 
-import javax.annotation.PostConstruct;
-import javax.sound.sampled.*;
 import java.io.File;
 import java.io.IOException;
-import java.io.SequenceInputStream;
-import java.util.Optional;
 
 /**
  * @author Chottek
@@ -41,7 +37,13 @@ public class ProcessingService {
         this.repository = repository;
     }
 
-    public Optional<File> process(MultipartFile file) throws IOException {
+    /**
+     *
+      * @param file From POSTMapping of ClassifierController class
+     * @return Optional with processed music file or null
+     * @throws IOException - of file reading exception
+     */
+    public java.util.Optional<File> process(MultipartFile file) throws IOException {
         java.util.List<Note> notez = new java.util.ArrayList<>();
         PredictResponse response = buildResponse(file);
         StringBuilder sb = new StringBuilder();
@@ -57,9 +59,15 @@ public class ProcessingService {
 
         LOG.info("Size: {}, Notes: {}", notez.size(), sb.toString());
 
-        return Optional.ofNullable(repository.merge(notez));
+        return java.util.Optional.ofNullable(repository.merge(notez));
     }
 
+    /**
+     * Method used to build Prediction of Google VISION API
+     * @param file Image with notes
+     * @return Built prediction request
+     * @throws IOException - of File reading exception
+     */
     private PredictResponse buildResponse(MultipartFile file) throws IOException {
 //        Image img = Image.newBuilder().setImageBytes(ByteString.copyFrom(
 //                Files.readAllBytes(loader.getResource("classpath:/maxresdefault.jpg").getFile().toPath()))).build();
