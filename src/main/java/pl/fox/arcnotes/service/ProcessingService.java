@@ -38,7 +38,6 @@ public class ProcessingService {
     }
 
     /**
-     *
       * @param file From POSTMapping of ClassifierController class
      * @return Optional with processed music file or null
      * @throws IOException - of file reading exception
