@@ -7,4 +7,7 @@ import pl.fox.arcnotes.model.User;
 @Repository
 public interface UserRepository extends JpaRepository<User, String> {
     //All things are in JpaRepository here
+
+
+
 }
