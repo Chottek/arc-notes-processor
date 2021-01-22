@@ -1,8 +1,5 @@
 package pl.fox.arcnotes.model;
 
-
-import java.util.Objects;
-
 @javax.persistence.Entity
 @javax.persistence.Table(name = "users")
 public class User {
@@ -41,13 +38,13 @@ public class User {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         User user = (User) o;
-        return Objects.equals(login, user.login) &&
-                Objects.equals(password, user.password);
+        return java.util.Objects.equals(login, user.login) &&
+                java.util.Objects.equals(password, user.password);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(login, password);
+        return java.util.Objects.hash(login, password);
     }
 
     @Override
