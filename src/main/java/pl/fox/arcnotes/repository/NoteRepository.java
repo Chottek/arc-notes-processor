@@ -60,6 +60,8 @@ public class NoteRepository {
             return null;
         }
 
+        LOG.info("GOT {} notes to merge!", notes.size());
+
         AudioFormat af = null;
         java.util.List<AudioInputStream> clips = new java.util.ArrayList<>();
         long frameLen = 0;

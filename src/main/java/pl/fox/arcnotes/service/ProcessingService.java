@@ -27,7 +27,7 @@ public class ProcessingService {
     private static final String LOCATION = "us-central1";                //google project location
     private static final String VISION_MODEL = "IOD5055336761211748352"; //google taught vision api serial
     private static final String VISION_MODEL_1 = "IOD6745734733847592960"; //second vision api model serial
-    private static final double SCORE_THRESHOLD = 0.6;      //Border value of results score (getAll > SCORE_THRESHOLD)
+    private static final double SCORE_THRESHOLD = 0.5;      //Border value of results score (getAll > SCORE_THRESHOLD)
 
     private final NoteRepository repository;
 
