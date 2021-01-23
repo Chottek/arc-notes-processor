@@ -32,18 +32,18 @@ public class ClassifierController {
      * @return ResponseEntity with music file or with return ERROR information
      */
     @PostMapping("/process")
-    public ResponseEntity process(@RequestBody MultipartFile file){
+    public ResponseEntity<java.io.File> process(@RequestBody MultipartFile file){
         try{
             java.util.Optional<java.io.File> op = service.process(file);
 
             if(op.isPresent()){
-                return ResponseEntity.ok()
+                return ResponseEntity.accepted()
                         .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + op.get().getName() + "\"")
                         .body(op.get());
             }
         }catch(java.io.IOException ie){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("There was a problem processing file");
+            return ResponseEntity.unprocessableEntity().build();
         }
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Too few notes to process");
+        return ResponseEntity.noContent().build();
     }
 }
