@@ -17,6 +17,14 @@ public class UserService {
         this.repository = repository;
     }
 
+    public List<User> findCookie(){
+        return repository.findCookie();
+    }
+
+    public User findFirstByCookieId(String cookieId){
+        return repository.findOneByCookieId(cookieId);
+    }
+
     public List<User> findAll(){
         return repository.findAll();
     }
@@ -28,8 +36,5 @@ public class UserService {
     public void remove(User u){
         repository.delete(u);
     }
-
-
-
 
 }

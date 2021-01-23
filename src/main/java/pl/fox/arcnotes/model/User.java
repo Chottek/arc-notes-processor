@@ -1,5 +1,6 @@
 package pl.fox.arcnotes.model;
 
+
 /**
  * @author Chottek
  * User Entity to store image in database based on cookie-id
@@ -8,25 +9,36 @@ package pl.fox.arcnotes.model;
 @javax.persistence.Table(name = "users")
 public class User {
 
-   private String cookieId;
-   private byte[] file;
+    private Integer id;
+    private String cookieId;
+    private byte[] file;
 
-    public User(String cookieId, byte[] file) {
+    public User(Integer id, String cookieId, byte[] file) {
+        this.id = id;
         this.cookieId = cookieId;
         this.file = file;
     }
 
-    public User(){
+    public User() {
 
     }
 
     @javax.persistence.Id
-    public String getCookieId(){
+    @javax.persistence.GeneratedValue(strategy = javax.persistence.GenerationType.AUTO)
+    public Integer getId(){
+        return id;
+    }
+
+    public String getCookieId() {
         return cookieId;
     }
 
     public byte[] getFile() {
         return file;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public void setCookieId(String cookieId) {
@@ -42,13 +54,14 @@ public class User {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         User user = (User) o;
-        return java.util.Objects.equals(cookieId, user.cookieId) &&
+        return  java.util.Objects.equals(id, user.id) &&
+                java.util.Objects.equals(cookieId, user.cookieId) &&
                 java.util.Arrays.equals(file, user.file);
     }
 
     @Override
     public int hashCode() {
-        int result = java.util.Objects.hash(cookieId);
+        int result =  java.util.Objects.hash(id, cookieId);
         result = 31 * result + java.util.Arrays.hashCode(file);
         return result;
     }
@@ -56,8 +69,9 @@ public class User {
     @Override
     public String toString() {
         return "User{" +
-                "cookieId='" + cookieId + '\'' +
-                ", file length=" + file.length +
+                "id=" + id +
+                ", cookieId='" + cookieId + '\'' +
+                ", file.length=" + file.length +
                 '}';
     }
 }

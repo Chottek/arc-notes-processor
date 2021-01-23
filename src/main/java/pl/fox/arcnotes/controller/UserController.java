@@ -2,10 +2,7 @@ package pl.fox.arcnotes.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import pl.fox.arcnotes.model.User;
 import pl.fox.arcnotes.service.UserService;
 
@@ -26,6 +23,17 @@ public class UserController {
     public ResponseEntity<Void> save(@RequestBody User u){
         service.addOrSave(u);
         return ResponseEntity.created(java.net.URI.create(URL + u.getCookieId())).build();
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable("id") String cookieId){
+        java.util.Optional<User> user = java.util.Optional.ofNullable(service.findFirstByCookieId(cookieId));
+        if(user.isPresent()){
+            service.remove(user.get());
+            return ResponseEntity.accepted().build();
+        }else{
+            return ResponseEntity.notFound().build();
+        }
     }
 
 
