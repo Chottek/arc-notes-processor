@@ -15,6 +15,15 @@ public class User {
    private String cookieId;
    private byte[] file;
 
+    public User(String cookieId, byte[] file) {
+        this.cookieId = cookieId;
+        this.file = file;
+    }
+
+    public User(){
+
+    }
+
     @javax.persistence.Id
     public String getCookieId(){
         return cookieId;
