@@ -13,8 +13,7 @@ public class User {
     private String cookieId;
     private byte[] file;
 
-    public User(Integer id, String cookieId, byte[] file) {
-        this.id = id;
+    public User(String cookieId, byte[] file) {
         this.cookieId = cookieId;
         this.file = file;
     }
