@@ -1,9 +1,5 @@
 package pl.fox.arcnotes.model;
 
-
-import java.util.Arrays;
-import java.util.Objects;
-
 /**
  * @author Chottek
  * User Entity to store image in database based on cookie-id
@@ -46,14 +42,14 @@ public class User {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         User user = (User) o;
-        return Objects.equals(cookieId, user.cookieId) &&
-                Arrays.equals(file, user.file);
+        return java.util.Objects.equals(cookieId, user.cookieId) &&
+                java.util.Arrays.equals(file, user.file);
     }
 
     @Override
     public int hashCode() {
-        int result = Objects.hash(cookieId);
-        result = 31 * result + Arrays.hashCode(file);
+        int result = java.util.Objects.hash(cookieId);
+        result = 31 * result + java.util.Arrays.hashCode(file);
         return result;
     }
 
