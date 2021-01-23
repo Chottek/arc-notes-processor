@@ -1,7 +1,6 @@
 package pl.fox.arcnotes.model;
 
 import javax.sound.sampled.AudioInputStream;
-import java.util.Objects;
 
 public class Note {
 
@@ -26,13 +25,13 @@ public class Note {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Note note = (Note) o;
-        return Objects.equals(type, note.type) &&
-                Objects.equals(soundFile, note.soundFile);
+        return java.util.Objects.equals(type, note.type) &&
+                java.util.Objects.equals(soundFile, note.soundFile);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(type, soundFile);
+        return java.util.Objects.hash(type, soundFile);
     }
 
     @Override
