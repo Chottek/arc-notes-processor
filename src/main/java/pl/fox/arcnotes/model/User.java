@@ -1,57 +1,31 @@
 package pl.fox.arcnotes.model;
 
+
+/**
+ * @author Chottek
+ * User Entity to store image in database based on cookie-id
+ */
 @javax.persistence.Entity
 @javax.persistence.Table(name = "users")
 public class User {
 
-    public User(String login, String password) {
-        this.login = login;
-        this.password = password;
-    }
-
-    public User(){
-
-    }
-
-    private String login;
-    private String password;
+   private String cookieId;
+   private byte[] file;
 
     @javax.persistence.Id
-    public String getLogin(){
-        return login;
+    public String getCookieId(){
+        return cookieId;
     }
 
-    public void setLogin(String login) {
-        this.login = login;
+    public byte[] getFile() {
+        return file;
     }
 
-    public String getPassword() {
-        return password;
+    public void setCookieId(String cookieId) {
+        this.cookieId = cookieId;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        User user = (User) o;
-        return java.util.Objects.equals(login, user.login) &&
-                java.util.Objects.equals(password, user.password);
-    }
-
-    @Override
-    public int hashCode() {
-        return java.util.Objects.hash(login, password);
-    }
-
-    @Override
-    public String toString() {
-        return "User{" +
-                "login='" + login + '\'' +
-                ", password='" + password + '\'' +
-                '}';
+    public void setFile(byte[] file) {
+        this.file = file;
     }
 }
