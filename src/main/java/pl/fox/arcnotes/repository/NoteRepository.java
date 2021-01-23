@@ -32,7 +32,7 @@ public class NoteRepository {
 
 
     /**
-     * A method used to initialize list of notesm,
+     * A method used to initialize list of notes,
      * gather music files as AudioInputStreams
      */
     @PostConstruct
