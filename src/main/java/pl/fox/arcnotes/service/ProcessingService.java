@@ -11,7 +11,6 @@ import pl.fox.arcnotes.model.Note;
 import pl.fox.arcnotes.repository.NoteRepository;
 
 import java.io.File;
-import java.io.IOException;
 
 /**
  * @author Chottek
@@ -39,9 +38,9 @@ public class ProcessingService {
     /**
       * @param file From POSTMapping of ClassifierController class
      * @return Optional with processed music file or null
-     * @throws IOException - of file reading exception
+     * @throws java.io.IOException - of file reading exception
      */
-    public java.util.Optional<File> process(MultipartFile file) throws IOException {
+    public java.util.Optional<File> process(MultipartFile file) throws java.io.IOException {
         java.util.List<Note> notez = new java.util.ArrayList<>();
         PredictResponse response = buildResponse(file);
         StringBuilder sb = new StringBuilder();
@@ -64,9 +63,9 @@ public class ProcessingService {
      * Method used to build Prediction of Google VISION API
      * @param file Image with notes
      * @return Built prediction request
-     * @throws IOException - of File reading exception
+     * @throws java.io.IOException - of File reading exception
      */
-    private PredictResponse buildResponse(MultipartFile file) throws IOException {
+    private PredictResponse buildResponse(MultipartFile file) throws java.io.IOException {
 //        Image img = Image.newBuilder().setImageBytes(ByteString.copyFrom(
 //                Files.readAllBytes(loader.getResource("classpath:/maxresdefault.jpg").getFile().toPath()))).build();
         return PredictionServiceClient.create().predict(
