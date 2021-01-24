@@ -2,9 +2,11 @@ package pl.fox.arcnotes.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import pl.fox.arcnotes.model.RequestEntity;
 import pl.fox.arcnotes.service.ProcessingService;
 
 /**
@@ -27,13 +29,13 @@ public class ClassifierController {
 
     /**
      * Method that passes file to service and returns processed music file
-     * @param file Multipart file that contains notes image
+     * @param requestEntity Multipart file that contains notes image
      * @return ResponseEntity with music file or with return ERROR information
      */
-    @PostMapping("/process")
-    public ResponseEntity<java.io.File> process(@RequestBody MultipartFile file){
+    @PostMapping(value = "/process", consumes = {"multipart/form-data"})
+    public ResponseEntity<java.io.File> process(@ModelAttribute RequestEntity requestEntity, @RequestPart("photoFile") MultipartFile file){
         try{
-            java.util.Optional<java.io.File> op = service.process(file);
+            java.util.Optional<java.io.File> op = service.process(requestEntity);
 
             if(op.isPresent()){
                 return ResponseEntity.accepted()

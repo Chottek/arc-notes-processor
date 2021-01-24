@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service;
 import pl.fox.arcnotes.model.User;
 import pl.fox.arcnotes.repository.UserRepository;
 
-import java.io.File;
 import java.util.List;
 
 @Service

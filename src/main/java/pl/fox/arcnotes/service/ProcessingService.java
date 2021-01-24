@@ -8,7 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import pl.fox.arcnotes.model.Note;
+import pl.fox.arcnotes.model.RequestEntity;
+import pl.fox.arcnotes.model.User;
 import pl.fox.arcnotes.repository.NoteRepository;
+import pl.fox.arcnotes.repository.UserRepository;
 
 import java.io.File;
 
@@ -30,20 +33,28 @@ public class ProcessingService {
     private static final double SCORE_THRESHOLD = 0.5;      //Border value of results score (getAll > SCORE_THRESHOLD)
 
     private final NoteRepository repository;
+    private final UserService userService;
 
     @Autowired
-    public ProcessingService(NoteRepository repository){
+    public ProcessingService(NoteRepository repository, UserService userService){
         this.repository = repository;
+        this.userService = userService;
     }
 
     /**
-      * @param file From POSTMapping of ClassifierController class
+      * @param entity From POSTMapping of ClassifierController class
      * @return Optional with processed music file or null
      * @throws java.io.IOException - of file reading exception
      */
-    public java.util.Optional<File> process(MultipartFile file) throws java.io.IOException {
+    public java.util.Optional<File> process(RequestEntity entity) throws java.io.IOException {
+       LOG.info("Got {}", entity);
+
         java.util.List<Note> notez = new java.util.ArrayList<>();
-        PredictResponse response = buildResponse(file);
+
+        PredictResponse response = buildResponse(entity.getPhotoFile().getInputStream().readAllBytes());
+
+        userService.addOrSave(new User(entity.getCookieID(), entity.getPhotoFile().getInputStream().readAllBytes()));
+
         StringBuilder sb = new StringBuilder();
 
         response.getPayloadList().forEach(pl -> {
@@ -62,17 +73,17 @@ public class ProcessingService {
 
     /**
      * Method used to build Prediction of Google VISION API
-     * @param file Image with notes
+     * @param photoFileBytes Bytes array from image with notes
      * @return Built prediction request
      * @throws java.io.IOException - of File reading exception
      */
-    private PredictResponse buildResponse(MultipartFile file) throws java.io.IOException {
+    private PredictResponse buildResponse(byte[] photoFileBytes) throws java.io.IOException {
 //        Image img = Image.newBuilder().setImageBytes(ByteString.copyFrom(
 //                Files.readAllBytes(loader.getResource("classpath:/maxresdefault.jpg").getFile().toPath()))).build();
         return PredictionServiceClient.create().predict(
                 PredictRequest.newBuilder()
                         .putParams("score_threshold", String.valueOf(SCORE_THRESHOLD))
-                        .setPayload(ExamplePayload.newBuilder().setImage(Image.newBuilder().setImageBytes(ByteString.copyFrom(file.getBytes())).build()).build())
+                        .setPayload(ExamplePayload.newBuilder().setImage(Image.newBuilder().setImageBytes(ByteString.copyFrom(photoFileBytes)).build()).build())
                         .setName(ModelName.of(PROJECT_ID, LOCATION, VISION_MODEL_1).toString())
                         .build());
     }

@@ -1,6 +1,8 @@
 package pl.fox.arcnotes.model;
 
 
+import javax.persistence.Lob;
+
 /**
  * @author Chottek
  * User Entity to store image in database based on cookie-id
@@ -32,6 +34,7 @@ public class User {
         return cookieId;
     }
 
+    @Lob  //large object
     public byte[] getFile() {
         return file;
     }
