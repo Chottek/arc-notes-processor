@@ -8,19 +8,19 @@ import javax.persistence.Lob;
  * User Entity to store image in database based on cookie-id
  */
 @javax.persistence.Entity
-@javax.persistence.Table(name = "users")
-public class User {
+@javax.persistence.Table(name = "cookieentity")
+public class CookieEntity {
 
     private Integer id;
     private String cookieId;
     private byte[] file;
 
-    public User(String cookieId, byte[] file) {
+    public CookieEntity(String cookieId, byte[] file) {
         this.cookieId = cookieId;
         this.file = file;
     }
 
-    public User() {
+    public CookieEntity() {
 
     }
 
@@ -55,10 +55,10 @@ public class User {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        User user = (User) o;
-        return  java.util.Objects.equals(id, user.id) &&
-                java.util.Objects.equals(cookieId, user.cookieId) &&
-                java.util.Arrays.equals(file, user.file);
+        CookieEntity cookieEntity = (CookieEntity) o;
+        return  java.util.Objects.equals(id, cookieEntity.id) &&
+                java.util.Objects.equals(cookieId, cookieEntity.cookieId) &&
+                java.util.Arrays.equals(file, cookieEntity.file);
     }
 
     @Override

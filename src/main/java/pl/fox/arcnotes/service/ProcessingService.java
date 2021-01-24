@@ -6,12 +6,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
+import pl.fox.arcnotes.ByteUtils;
 import pl.fox.arcnotes.model.Note;
 import pl.fox.arcnotes.model.RequestEntity;
-import pl.fox.arcnotes.model.User;
+import pl.fox.arcnotes.model.CookieEntity;
 import pl.fox.arcnotes.repository.NoteRepository;
-import pl.fox.arcnotes.repository.UserRepository;
 
 import java.io.File;
 
@@ -33,12 +32,12 @@ public class ProcessingService {
     private static final double SCORE_THRESHOLD = 0.5;      //Border value of results score (getAll > SCORE_THRESHOLD)
 
     private final NoteRepository repository;
-    private final UserService userService;
+    private final CookieService cookieService;
 
     @Autowired
-    public ProcessingService(NoteRepository repository, UserService userService){
+    public ProcessingService(NoteRepository repository, CookieService cookieService){
         this.repository = repository;
-        this.userService = userService;
+        this.cookieService = cookieService;
     }
 
     /**
@@ -51,13 +50,11 @@ public class ProcessingService {
 
         java.util.List<Note> notez = new java.util.ArrayList<>();
 
-        PredictResponse response = buildResponse(entity.getPhotoFile().getInputStream().readAllBytes());
-
-        userService.addOrSave(new User(entity.getCookieID(), entity.getPhotoFile().getInputStream().readAllBytes()));
+        cookieService.addOrSave(new CookieEntity(entity.getCookieID(), ByteUtils.compressBytes(entity.getPhotoFile().getInputStream().readAllBytes()))); //COMPRESS HERE
 
         StringBuilder sb = new StringBuilder();
 
-        response.getPayloadList().forEach(pl -> {
+        buildResponse(entity.getPhotoFile().getInputStream().readAllBytes()).getPayloadList().forEach(pl -> {
             sb.append(pl.getDisplayName()).append(" ");
             for (Note n : repository.getNotes()) {
                 if (n.getType().equals(pl.getDisplayName())) {
