@@ -34,15 +34,8 @@ public class CookieController {
 
     @DeleteMapping("deleteAllByCookie/{id}")
     public ResponseEntity<Void> delete(@PathVariable("id") String cookieID){
-        java.util.Optional<java.util.List<CookieEntity>> ce = java.util.Optional.ofNullable(service.findAllByCookieId(cookieID));
-        if(ce.isPresent()){
-            for(CookieEntity c : ce.get()){
-                service.remove(c);
-            }
-            return ResponseEntity.accepted().build();
-        }else{
-            return ResponseEntity.notFound().build();
-        }
+        service.removeAllByCookieId(cookieID);
+        return ResponseEntity.accepted().build();
     }
 
 }

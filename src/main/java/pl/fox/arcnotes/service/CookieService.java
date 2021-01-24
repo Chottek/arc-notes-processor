@@ -2,6 +2,7 @@ package pl.fox.arcnotes.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import pl.fox.arcnotes.ByteUtils;
 import pl.fox.arcnotes.model.CookieEntity;
 import pl.fox.arcnotes.repository.CookieRepository;
 
@@ -16,15 +17,22 @@ public class CookieService {
     }
 
     public java.util.List<CookieEntity> findAllByCookieId(String cookieID){
-        return repository.findAllByCookie(cookieID);
+        java.util.List<CookieEntity> entities = repository.findAllByCookie(cookieID);
+        entities.forEach(ce -> ce.setFile(ByteUtils.decompressBytes(ce.getFile())));
+
+        return entities;
     }
 
-    public void addOrSave(CookieEntity u){
-        repository.save(u);
+    public void removeAllByCookieId(String cookieID){
+        repository.findAllByCookie(cookieID).forEach(this::remove);
     }
 
-    public void remove(CookieEntity u){
-        repository.delete(u);
+    public void addOrSave(CookieEntity ce){
+        repository.save(ce);
+    }
+
+    public void remove(CookieEntity ce){
+        repository.delete(ce);
     }
 
 }
