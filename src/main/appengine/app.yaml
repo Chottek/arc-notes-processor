@@ -1,9 +1,10 @@
 runtime: java
+instance_class: F1
 env: flex
 runtime_config:
-  jdk: openjdk11
+  jdk: java11
 env_variables:
-  SPRING_PROFILES_ACTIVE: "gcp,mysql"
+  SPRING_PROFILES_ACTIVE: "gcp"
 handlers:
   - url: /.*
     script: this field is required, but ignored

@@ -8,7 +8,7 @@ import javax.persistence.Lob;
  * User Entity to store image in database based on cookie-id
  */
 @javax.persistence.Entity
-@javax.persistence.Table(name = "cookieentity")
+@javax.persistence.Table(name = "cookieuser")
 public class CookieEntity {
 
     private Integer id;
