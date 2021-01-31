@@ -13,6 +13,7 @@ import pl.fox.arcnotes.model.CookieEntity;
 import pl.fox.arcnotes.repository.NoteRepository;
 
 import java.io.File;
+import java.util.Objects;
 
 /**
  * @author Chottek
@@ -48,7 +49,13 @@ public class ProcessingService {
     public java.util.Optional<File> process(RequestEntity entity) throws java.io.IOException {
        LOG.info("Got {}", entity);
 
-        java.util.List<Note> notez = new java.util.ArrayList<>();
+       if(Objects.requireNonNull(entity.getPhotoFile().getOriginalFilename()).toUpperCase().endsWith(".PNG") ||
+            entity.getPhotoFile().getOriginalFilename().toUpperCase().endsWith(".PNG")){
+           LOG.error("Wrong file extension!");
+           return java.util.Optional.empty();
+       }
+
+       java.util.List<Note> notez = new java.util.ArrayList<>();
 
         cookieService.addOrSave(new CookieEntity(entity.getCookieID(), ByteUtils.compressBytes(entity.getPhotoFile().getInputStream().readAllBytes()))); //COMPRESS HERE
 
