@@ -2,6 +2,7 @@ package pl.fox.arcnotes.repository;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.ResourceUtils;
 import pl.fox.arcnotes.model.Note;
@@ -40,7 +41,7 @@ public class NoteRepository {
         try {
             for (String s : notesArr) {
                 notes.add(new Note(s, AudioSystem.getAudioInputStream(
-                        ResourceUtils.getFile("classpath:" + NOTES_PATH + "/" + s + "." + FILE_EXT))));
+                        new ClassPathResource(NOTES_PATH + "/" + s + "." + FILE_EXT).getInputStream())));
             }
             LOG.info("Finished Notes initializing [size: {}]", notes.size());
         } catch (UnsupportedAudioFileException | IOException e) {
