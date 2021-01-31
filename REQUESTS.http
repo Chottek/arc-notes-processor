@@ -1,3 +1,39 @@
+POST http://localhost:80/api/item
+Content-Type: multipart/form-data; boundary=WebAppBoundary
+
+--WebAppBoundary
+Content-Disposition: form-data; name="field-name"
+
+field-value
+--WebAppBoundary--
+
+###
+
+###
+POST http://localhost:8080/api/classifier/process
+Content-Type: multipart/form-data; boundary=WebAppBoundary
+
+--WebAppBoundary
+Content-Disposition: form-data; cookieID=10; photoFile="C:\Users\Chotek\Desktop\Sqola\ARC\arc-notes-processor\src\main\resources\maxresdefault.jpg"
+Content-Disposition: form-data; name="cookieID"
+
+< C:\Users\Chotek\Desktop\Sqola\ARC\arc-notes-processor\src\main\resources\maxresdefault.jpg
+--WebAppBoundary--
+
+###
+POST http://localhost:8080/api/classifier/process
+Content-Type: multipart/form-data; boundary=WebAppBoundary
+
+--WebAppBoundary
+Content-Disposition: form-data; name="cookieID"; photoFile="maxresdefault.jpg"
+
+< C:\Users\Chotek\Desktop\Sqola\ARC\arc-notes-processor\src\main\resources\maxresdefault.jpg
+--WebAppBoundary--
+
+###
+
+
+###
 GET http://localhost:8080/api/notes/testIt
 Accept: application/json
 
@@ -6,3 +42,4 @@ GET http://localhost:8080/api/classifier/process
 Accept: application/json
 
 
+###
